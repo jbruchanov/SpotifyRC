@@ -71,46 +71,47 @@ class SpotifyLocalClient(
     }
 
     override suspend fun isPaused(): Boolean {
-        return spotify?.playerApi?.playerState.fetch { isPaused }
+        return spotify?.playerApi?.playerState?.fetch { isPaused } ?: true
     }
 
-    override suspend fun resume() {
-        return spotify?.playerApi.call { resume() }
-    }
-
-    override suspend fun pause() {
-        return spotify?.playerApi.call { pause() }
-    }
-
-    suspend fun loadImage(uri: ImageUri): Bitmap {
-        return spotify?.imagesApi?.getImage(uri).fetch { this }
+    suspend fun loadImage(uri: ImageUri): Bitmap? {
+        return spotify?.imagesApi?.getImage(uri)?.fetch { this }
     }
 
     override suspend fun playNext() {
-        spotify?.playerApi.call { skipNext() }
+        spotify?.playerApi?.call { skipNext() }
     }
 
     override suspend fun playPrevious() {
-        spotify?.playerApi.call { skipPrevious() }
+        spotify?.playerApi?.call { skipPrevious() }
     }
 
-    private suspend fun <R, T> R?.call(block: R.() -> T): T {
+    override suspend fun resume() {
+        spotify?.playerApi?.call { resume() }
+    }
+
+    override suspend fun pause() {
+        spotify?.playerApi?.call { pause() }
+    }
+
+
+    private suspend fun <R, T> R.call(block: R.() -> T): T {
         return suspendCancellableCoroutine { continuation ->
             this?.also {
                 val result = block.invoke(it)
                 continuation.resumeWith(Result.success(result))
-            } ?: continuation.resumeWithException(NullPointerException("playerApi"))
+            }
         }
     }
 
-    private suspend fun <R, T> CallResult<R>?.fetch(block: R.() -> T): T {
+    private suspend fun <R, T> CallResult<R>.fetch(block: R.() -> T): T {
         return suspendCancellableCoroutine { continuation ->
             this?.also {
                 it.setResultCallback { target ->
                     val result = block.invoke(target)
                     continuation.resumeWith(Result.success(result))
                 }
-            } ?: continuation.resumeWithException(NullPointerException())
+            }
         }
     }
 
