@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="gap_normal">8dp</dimen>
+    <dimen name="gap_large">16dp</dimen>
+    <dimen name="button_square_radius">10dp</dimen>
+    <dimen name="button_circle_diam">96dp</dimen>
+    <dimen name="button_circle_icon_size">48dp</dimen>
+
+    <dimen name="mtrl_btn_z">10dp</dimen>
+    <dimen name="mtrl_btn_pressed_z">2dp</dimen>
+    <dimen name="mtrl_btn_elevation">6dp</dimen>
+
+    <dimen name="divider_thick">4dp</dimen>
+
+    <dimen name="button_scale_pressed">0.98</dimen>
+    <dimen name="button_elevation_pressed">2dp</dimen>
+    <dimen name="button_elevation_default">4dp</dimen>
+    <dimen name="button_home_min_size">100dp</dimen>
+    <dimen name="text_size_album">36sp</dimen>
+    <dimen name="album_icon_radius">10dp</dimen>
+    <dimen name="album_icon_size">325dp</dimen>
+    <dimen name="time_radius">5dp</dimen>
+    <dimen name="time_min_width">50dp</dimen>
+    <dimen name="icon_small">24dp</dimen>
+
+</resources>

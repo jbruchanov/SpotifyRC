@@ -1,0 +1,31 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:elevation">@dimen/button_elevation_default</item>
+        <item name="elevation">@dimen/button_elevation_default</item>
+    </style>
+
+    <style name="Widget" />
+    <style name="Widget.Button">
+        <item name="android:stateListAnimator">@animator/btn_state_list_anim</item>
+    </style>
+
+    <style name="Widget.Button.Circle">
+        <item name="android:background">@drawable/bg_circle_button</item>
+        <item name="android:elevation">@dimen/button_elevation_default</item>
+    </style>
+
+    <style name="Widget.Button.Home">
+        <item name="android:background">@drawable/bg_square_button</item>
+        <item name="android:tint">@color/colorPrimary</item>
+        <item name="android:minWidth">@dimen/button_home_min_size</item>
+        <item name="android:minHeight">@dimen/button_home_min_size</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+</resources>
