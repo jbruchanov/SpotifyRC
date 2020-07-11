@@ -33,6 +33,17 @@ sealed class Command(override val data: MutableMap<String, Any?> = mutableMapOf(
         }
     }
 
+    class Play() : Command() {
+        constructor(id: String) : this() {
+            this.id = id
+        }
+        var id: String by data
+
+        override suspend fun invoke(spotifak: SpotifyLocalClient) {
+            spotifak.play(id)
+        }
+    }
+
     class Ping : Command() {
         override suspend fun invoke(spotifak: SpotifyLocalClient) {
 

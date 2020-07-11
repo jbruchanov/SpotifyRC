@@ -85,6 +85,10 @@ class SpotifyBtClient @Inject constructor(
         sendCommand(Command.Previous())
     }
 
+    override suspend fun play(id: String) {
+        sendCommand(Command.Play(id))
+    }
+
     private fun onReceivedMessage(item: Any) {
         when (item) {
             is PlayerStateKt -> _playerState.postValue(item)
@@ -104,7 +108,7 @@ class SpotifyBtClient @Inject constructor(
             val buffer = ByteArray(8)
             try {
                 socket.connect()
-                pingJob = startPingJob(socket)
+                //pingJob = startPingJob(socket)
                 _state.postValue(ConnectingState.Connected)
                 this@SpotifyBtClient.socket = socket
                 while (isRunning.get() && socket.isConnected) {
@@ -139,7 +143,7 @@ class SpotifyBtClient @Inject constructor(
         return GlobalScope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
-                    delay(BluetoothServer.TIMEOUT)
+                    delay(BluetoothServer.TIMEOUT * 2)
                     socket.outputStream.sendPacket(Packet.TYPE_JSON, ping)
                     Log.d(TAG, "Ping server OK")
                 } catch (e: Exception) {

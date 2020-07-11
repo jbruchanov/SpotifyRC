@@ -3,7 +3,7 @@
     <dimen name="gap_normal">8dp</dimen>
     <dimen name="gap_large">16dp</dimen>
     <dimen name="button_square_radius">10dp</dimen>
-    <dimen name="button_circle_diam">96dp</dimen>
+    <dimen name="button_circle_diam">72dp</dimen>
     <dimen name="button_circle_icon_size">48dp</dimen>
 
     <dimen name="mtrl_btn_z">10dp</dimen>
@@ -18,7 +18,7 @@
     <dimen name="button_home_min_size">100dp</dimen>
     <dimen name="text_size_album">36sp</dimen>
     <dimen name="album_icon_radius">10dp</dimen>
-    <dimen name="album_icon_size">300dp</dimen>
+    <dimen name="album_icon_size">275dp</dimen>
     <dimen name="time_radius">5dp</dimen>
     <dimen name="time_min_width">50dp</dimen>
     <dimen name="icon_small">24dp</dimen>

@@ -22,6 +22,7 @@ class SpotifyLocalClient(
     private val clientId: String
 ) : ISpotifyClient {
 
+    private var ignoreNextUpdateIfEmpty: Boolean = false
     private var spotify: SpotifyAppRemote? = null
     private val _playerState = MutableLiveData<PlayerStateKt>()
     override val playerState: LiveData<PlayerStateKt> = _playerState
@@ -65,8 +66,11 @@ class SpotifyLocalClient(
                             it.playerApi.subscribeToPlayerState().setEventCallback { state ->
                                 Log.d(TAG, "Update state:${state}")
                                 if (state != null) {
-                                    _playerState.value = PlayerStateKt(state)
+                                    if(!(ignoreNextUpdateIfEmpty && state.track == null)) {
+                                        _playerState.value = PlayerStateKt(state)
+                                    }
                                 }
+                                ignoreNextUpdateIfEmpty = false
                             }
                         }
                     }
@@ -111,6 +115,13 @@ class SpotifyLocalClient(
 
     override suspend fun pause() {
         spotify?.playerApi?.call { pause() }
+    }
+
+    override suspend fun play(id: String) {
+        spotify?.playerApi?.call {
+            ignoreNextUpdateIfEmpty = true
+            play(id)
+        }
     }
 
 

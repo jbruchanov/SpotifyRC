@@ -1,5 +1,6 @@
 package com.scurab.android.spotifyrc
 
+import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.scurab.android.spotifyrc.adapter.AlbumTracksAdapter
 import com.scurab.android.spotifyrc.databinding.FragmentClientBinding
 import com.scurab.android.spotifyrc.spotify.ConnectingState
 import com.scurab.android.spotifyrc.util.viewBinding
@@ -23,6 +26,12 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
     private val viewBoundToConnectivity by viewBinding {
         listOf(views.trackNext, views.trackPlayPause, views.trackPrevious)
     }
+    private val adapter by viewBinding {
+        AlbumTracksAdapter {
+            viewModel.onTrackClick(it)
+        }
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,7 +53,9 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
         trackPlayPause.setOnClickListener { viewModel.playPause() }
         trackPrevious.setOnClickListener { viewModel.playPrevious() }
         trackNext.setOnClickListener { viewModel.playNext() }
-        views.album.isSelected = true
+        album.isSelected = true
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun bindViewModel() {
@@ -69,15 +80,8 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
             }
         }
 
-        viewModel.image.observe(viewLifecycleOwner) { bitmap ->
-            if (bitmap.first != null) {
-                TransitionDrawable(arrayOf(views.image.drawable, BitmapDrawable(resources, bitmap.first))).also {
-                    views.image.setImageDrawable(it)
-                    it.startTransition(resources.getInteger(R.integer.activity_anim_duration))
-                }
-            } else {
-                views.image.setImageResource(R.drawable.ic_baseline_album_96)
-            }
+        viewModel.image.observe(viewLifecycleOwner) { imageData ->
+            setDrawableWithTransition(imageData.first)
         }
 
         var lastImageUri: String? = null
@@ -88,24 +92,39 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
                     album.text = state.trackAlbumName
                 }
                 time.time = state.playbackPosition
-                time.setTicking(state.isPaused != false)
+                time.setTicking(state.isPaused != true)
                 track.text = state.trackName
                 artist.text = state.trackArtistName
                 trackPrevious.isEnabled = state.playbackRestrictionsCanSkipPrev
                 trackNext.isEnabled = state.playbackRestrictionsCanSkipNext
-                when(state.isPaused) {
-                    true -> trackPlayPause.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_play_arrow_48, requireActivity().theme))
-                    false -> trackPlayPause.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_pause_48, requireActivity().theme))
-                    null -> {
-                        trackPlayPause.setImageDrawable(null)
-                    }
+                when (state.isPaused) {
+                    true -> trackPlayPause.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_baseline_play_arrow_48, requireActivity().theme)
+                    )
+                    false -> trackPlayPause.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_baseline_pause_48, requireActivity().theme)
+                    )
+                    null -> trackPlayPause.setImageDrawable(null)
+
                 }
                 trackPlayPause.isEnabled = state.trackUri != null
-                if(lastImageUri != null && state.trackImageUri == null) {
+                if (lastImageUri != null && state.trackImageUri == null) {
                     views.image.setImageResource(R.drawable.ic_baseline_album_96)
                 }
                 lastImageUri = state.trackImageUri
+                adapter.items = state.albumTracks ?: emptyList()
             }
+        }
+    }
+
+    private fun setDrawableWithTransition(bitmap: Bitmap?) {
+        if (bitmap != null) {
+            TransitionDrawable(arrayOf(views.image.drawable, BitmapDrawable(resources, bitmap))).also {
+                views.image.setImageDrawable(it)
+                it.startTransition(resources.getInteger(R.integer.activity_anim_duration))
+            }
+        } else {
+            views.image.setImageResource(R.drawable.ic_baseline_album_96)
         }
     }
 }

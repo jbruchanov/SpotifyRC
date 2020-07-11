@@ -22,4 +22,6 @@ interface ISpotifyClient {
     suspend fun playNext()
 
     suspend fun playPrevious()
+
+    suspend fun play(id: String)
 }

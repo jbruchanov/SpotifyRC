@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.scurab.android.spotifyrc.model.STrack
 import com.scurab.android.spotifyrc.service.BluetoothServer
 import com.scurab.android.spotifyrc.spotify.ConnectingState
 import com.scurab.android.spotifyrc.spotify.SpotifyBtClient
@@ -73,6 +74,12 @@ class ClientViewModel @ViewModelInject constructor(
                 }
                 delay(BluetoothServer.TIMEOUT)
             }
+        }
+    }
+
+    fun onTrackClick(track: STrack) {
+        viewModelScope.launch {
+            spotify.play(track.uri)
         }
     }
 }
