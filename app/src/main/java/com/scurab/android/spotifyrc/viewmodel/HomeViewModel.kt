@@ -28,6 +28,7 @@ class HomeViewModel @ViewModelInject constructor(
     fun onServerClicked() {
         val token = when {
             !deviceInfoProvider.isSpotifyAppInstalled() -> HomeNavigationToken.ErrorNoSpotifyApp
+            prefs.localAccessToken == null -> HomeNavigationToken.ErrorLoginFirst
             !deviceInfoProvider.isBlueToothEnabled -> HomeNavigationToken.ErrorBluetoothOff
             else -> HomeNavigationToken.StartServer
         }
@@ -86,5 +87,6 @@ enum class HomeNavigationToken {
     ErrorNoServerSelected,
     ErrorBluetoothOff,
     ErrorConnectToSelectedDeviceFirst,
-    ErrorNeedLocationPermission
+    ErrorNeedLocationPermission,
+    ErrorLoginFirst
 }

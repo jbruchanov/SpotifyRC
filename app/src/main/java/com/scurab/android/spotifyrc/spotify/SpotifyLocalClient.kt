@@ -3,8 +3,7 @@ package com.scurab.android.spotifyrc.spotify
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.scurab.android.spotifyrc.App
 import com.scurab.android.spotifyrc.model.PlayerStateKt
 import com.spotify.android.appremote.api.ConnectionParams
@@ -12,9 +11,11 @@ import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.client.CallResult
 import com.spotify.protocol.types.ImageUri
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.ByteArrayOutputStream
 import kotlin.coroutines.resumeWithException
-
 
 class SpotifyLocalClient(
     private val app: Context,
@@ -24,6 +25,23 @@ class SpotifyLocalClient(
     private var spotify: SpotifyAppRemote? = null
     private val _playerState = MutableLiveData<PlayerStateKt>()
     override val playerState: LiveData<PlayerStateKt> = _playerState
+    override val image: LiveData<Pair<Bitmap?, ByteArray?>> = MediatorLiveData<Pair<Bitmap?, ByteArray?>>().let { mediator ->
+        mediator.addSource(playerState.map { it.trackImageUri }.distinctUntilChanged()) {
+            if (it != null) {
+                GlobalScope.launch {
+                    loadImage(ImageUri(it))?.let { bitmap ->
+                        val output = ByteArrayOutputStream(bitmap.byteCount)
+                        if (bitmap.compress(Bitmap.CompressFormat.JPEG, 50, output)) {
+                            mediator.postValue(Pair(null, output.toByteArray()))
+                        }
+                    }
+                }
+            } else {
+                mediator.value = Pair(null, null)
+            }
+        }
+        mediator
+    }
     private val _state = MutableLiveData<ConnectingState>()
     val state: LiveData<ConnectingState> = _state
     override val connectedState: ConnectingState = _state.value ?: ConnectingState.Disconnected

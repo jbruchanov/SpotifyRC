@@ -70,26 +70,41 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
         }
 
         viewModel.image.observe(viewLifecycleOwner) { bitmap ->
-            TransitionDrawable(arrayOf(views.image.drawable, BitmapDrawable(resources, bitmap))).also {
-                views.image.setImageDrawable(it)
-                it.startTransition(resources.getInteger(R.integer.activity_anim_duration))
+            if (bitmap.first != null) {
+                TransitionDrawable(arrayOf(views.image.drawable, BitmapDrawable(resources, bitmap.first))).also {
+                    views.image.setImageDrawable(it)
+                    it.startTransition(resources.getInteger(R.integer.activity_anim_duration))
+                }
+            } else {
+                views.image.setImageResource(R.drawable.ic_baseline_album_96)
             }
         }
 
-        viewModel.playerState.observe(viewLifecycleOwner) {
+        var lastImageUri: String? = null
+        viewModel.playerState.observe(viewLifecycleOwner) { state ->
             Log.d("ClientFragment", "Updated state")
             views.apply {
-                if (album.text.toString() != it.trackAlbumName) {
-                    album.text = it.trackAlbumName
+                if (album.text.toString() != state.trackAlbumName) {
+                    album.text = state.trackAlbumName
                 }
-                time.time = it.playbackPosition
-                time.setTicking(!it.isPaused)
-                track.text = it.trackName
-                artist.text = it.trackArtistName
-                trackPrevious.isEnabled = it.playbackRestrictionsCanSkipPrev
-                trackNext.isEnabled = it.playbackRestrictionsCanSkipNext
-                val resId = if (it.isPaused) R.drawable.ic_baseline_play_arrow_48 else R.drawable.ic_baseline_pause_48
-                trackPlayPause.setImageDrawable(resources.getDrawable(resId, requireActivity().theme))
+                time.time = state.playbackPosition
+                time.setTicking(state.isPaused != false)
+                track.text = state.trackName
+                artist.text = state.trackArtistName
+                trackPrevious.isEnabled = state.playbackRestrictionsCanSkipPrev
+                trackNext.isEnabled = state.playbackRestrictionsCanSkipNext
+                when(state.isPaused) {
+                    true -> trackPlayPause.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_play_arrow_48, requireActivity().theme))
+                    false -> trackPlayPause.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_pause_48, requireActivity().theme))
+                    null -> {
+                        trackPlayPause.setImageDrawable(null)
+                    }
+                }
+                trackPlayPause.isEnabled = state.trackUri != null
+                if(lastImageUri != null && state.trackImageUri == null) {
+                    views.image.setImageResource(R.drawable.ic_baseline_album_96)
+                }
+                lastImageUri = state.trackImageUri
             }
         }
     }

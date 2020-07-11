@@ -5,16 +5,25 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
+import com.scurab.android.spotify.api.SpotifyApi
 import com.scurab.android.spotifyrc.AppActivity
 import com.scurab.android.spotifyrc.R
 import com.scurab.android.spotifyrc.ext.zipWith
+import com.scurab.android.spotifyrc.model.Packet
+import com.scurab.android.spotifyrc.model.getSimpleTracks
 import com.scurab.android.spotifyrc.spotify.SpotifyLocalClient
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import java.io.ByteArrayOutputStream
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RemoteControlService : LifecycleService() {
 
     private val TAG = "RemoteControlService"
@@ -25,14 +34,19 @@ class RemoteControlService : LifecycleService() {
             }
         }
     }
-    private lateinit var spotifyClient: SpotifyLocalClient
+
+    @Inject
+    lateinit var spotifyClient: SpotifyLocalClient
+
+    @Inject
+    lateinit var spotifyApi: SpotifyApi
+
     private val state by lazy {
         bluetoothServer.devices.zipWith(spotifyClient.state) { x, y -> Pair(x, "Spotify:$y") }
     }
 
     override fun onCreate() {
         super.onCreate()
-        spotifyClient = SpotifyLocalClient(this, "da170041a6f94b938eadd5d8820778cf")
         Log.d(TAG, "onCreate")
     }
 
@@ -63,9 +77,39 @@ class RemoteControlService : LifecycleService() {
             val (devices, state) = it
             updateNotification(state, devices)
         }
-        spotifyClient.playerState.observe(this) {
-            bluetoothServer.latestState = it
-            bluetoothServer.sendToClient(it)
+
+        bindSpotifyClient()
+    }
+
+    private fun bindSpotifyClient() {
+        spotifyClient.image.observe(this) { bitmap ->
+            val byteArray = bitmap.second
+            bluetoothServer.latestBitmap = bitmap.second
+            if (byteArray != null) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    bluetoothServer.sendToClient(Packet.TYPE_BITMAP, byteArray)
+                }
+            }
+        }
+        spotifyClient.playerState.observe(this) { state ->
+            val firstState = bluetoothServer.latestState == null
+            bluetoothServer.latestState = state
+            if (firstState) {
+                bluetoothServer.sendToClient(state)
+            }
+
+            val albumId = state.trackAlbumId
+            if (albumId != null) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    kotlin.runCatching { spotifyApi.getAlbum(albumId) }.getOrNull()?.let { album ->
+                        state.albumTracks = album.getSimpleTracks()
+                        state.trackAlbumUrl = album.getBestImageUrl()
+                    }
+                    bluetoothServer.sendToClient(state)
+                }
+            } else if (!firstState) {
+                bluetoothServer.sendToClient(state)
+            }
         }
     }
 
@@ -95,7 +139,14 @@ class RemoteControlService : LifecycleService() {
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setSmallIcon(R.drawable.ic_stat_music)
-            .setContentIntent(PendingIntent.getActivity(this, 1, Intent(this, AppActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT))
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    this,
+                    1,
+                    Intent(this, AppActivity::class.java),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
             .addAction(
                 R.drawable.ic_stat_music,
                 "Stop",

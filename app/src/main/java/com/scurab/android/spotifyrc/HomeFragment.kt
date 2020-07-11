@@ -66,6 +66,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
                 HomeNavigationToken.OpenClient -> replaceFragment(ClientFragment())
                 HomeNavigationToken.OpenBluetoothScanner -> replaceFragment(BluetoothScannerFragment())
+                HomeNavigationToken.SpotifyLogin -> {
+                    val request = AuthorizationRequest.Builder(
+                        resources.getString(R.string.spotify_client_id),
+                        AuthorizationResponse.Type.TOKEN,
+                        App.REDIRECT_URL
+                    ).setScopes(arrayOf("user-read-email", "user-library-read")).build()
+                    val intent = AuthorizationClient.createLoginActivityIntent(requireActivity(), request)
+                    startActivityForResult(intent, SPOTIFY_REQ_CODE)
+                }
+                HomeNavigationToken.SpotifyLoggedOut -> {
+                    Snackbar.make(requireView(), R.string.you_have_been_logged_out, Snackbar.LENGTH_SHORT).show()
+                }
+                HomeNavigationToken.SpotifyOk -> {
+                    Snackbar.make(requireView(), R.string.you_have_been_logged_in, Snackbar.LENGTH_SHORT).show()
+                }
+                HomeNavigationToken.SpotifyError -> {
+                    Snackbar.make(requireView(), R.string.unexpected_spotify_response, Snackbar.LENGTH_SHORT)
+                        .setAction(R.string.ok, null)
+                        .show()
+                }
                 HomeNavigationToken.ErrorNoSpotifyApp -> {
                     Snackbar.make(requireView(), R.string.install_spotify_app, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.install) {
@@ -92,6 +112,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                         }.show()
                 }
+                HomeNavigationToken.ErrorLoginFirst -> {
+                    Snackbar.make(requireView(), R.string.login_first, Snackbar.LENGTH_LONG).show()
+                }
                 HomeNavigationToken.ErrorNeedLocationPermission -> {
                     Snackbar.make(requireView(), R.string.bt_scanner_needs_location_perms, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.ask) {
@@ -99,26 +122,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                                 requireActivity().requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 123)
                             }
                         }.show()
-                }
-                HomeNavigationToken.SpotifyLogin -> {
-                    val request = AuthorizationRequest.Builder(
-                        resources.getString(R.string.spotify_client_id),
-                        AuthorizationResponse.Type.TOKEN,
-                        App.REDIRECT_URL
-                    ).setScopes(arrayOf("user-read-email")).build()
-                    val intent = AuthorizationClient.createLoginActivityIntent(requireActivity(), request)
-                    startActivityForResult(intent, SPOTIFY_REQ_CODE)
-                }
-                HomeNavigationToken.SpotifyLoggedOut -> {
-                    Snackbar.make(requireView(), R.string.you_have_been_logged_out, Snackbar.LENGTH_SHORT).show()
-                }
-                HomeNavigationToken.SpotifyOk -> {
-                    Snackbar.make(requireView(), R.string.you_have_been_logged_in, Snackbar.LENGTH_SHORT).show()
-                }
-                HomeNavigationToken.SpotifyError -> {
-                    Snackbar.make(requireView(), R.string.unexpected_spotify_response, Snackbar.LENGTH_SHORT)
-                        .setAction(R.string.ok, null)
-                        .show()
                 }
             }
         }

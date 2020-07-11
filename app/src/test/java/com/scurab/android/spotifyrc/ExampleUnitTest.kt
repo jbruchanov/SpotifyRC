@@ -1,6 +1,5 @@
 package com.scurab.android.spotifyrc
 
-import androidx.lifecycle.MutableLiveData
 import com.scurab.android.spotifyrc.commands.Command
 import com.scurab.android.spotifyrc.util.JsonConverter
 import org.junit.Test
@@ -18,6 +17,4 @@ class ExampleUnitTest {
         val json = converter.toJson(Command.Resume())
         val x = converter.fromJson<Command.Resume>(json)
     }
-
-
 }

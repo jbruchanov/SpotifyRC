@@ -1,15 +1,17 @@
 package com.scurab.android.spotifyrc.spotify
 
+import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import com.scurab.android.spotifyrc.model.PlayerStateKt
 
 interface ISpotifyClient {
     val playerState: LiveData<PlayerStateKt>
+    val image: LiveData<Pair<Bitmap?, ByteArray?>>
+    val connectedState: ConnectingState
+
     fun connect()
 
     fun close()
-
-    val connectedState: ConnectingState
 
     suspend fun isPaused(): Boolean
 

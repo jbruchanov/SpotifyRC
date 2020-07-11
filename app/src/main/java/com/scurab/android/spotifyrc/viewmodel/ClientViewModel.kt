@@ -22,22 +22,8 @@ class ClientViewModel @ViewModelInject constructor(
         it.takeIf { !(it == ConnectingState.Disconnected && isReconnecting) } ?: ConnectingState.Connecting
     }.distinctUntilChanged()
     val playerState = spotify.playerState
-    val imageUrl = spotify.playerState.map {
-        it.trackImageUri
-    }.distinctUntilChanged()
 
-    val image: LiveData<Bitmap> = MediatorLiveData<Bitmap>().let { mediator ->
-        mediator.addSource(imageUrl) {
-//            if (it != null) {
-//                viewModelScope.launch {
-//                    mediator.value = spotify.loadImage(ImageUri(it))
-//                }
-//            } else {
-//                mediator.value = null
-//            }
-        }
-        mediator
-    }
+    val image = spotify.image
 
     fun playPause() {
         viewModelScope.launch {
