@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="activity_anim_duration" type="integer">500</item>
+
+    <string name="spotify_client_id">"da170041a6f94b938eadd5d8820778cf"</string>
 </resources>

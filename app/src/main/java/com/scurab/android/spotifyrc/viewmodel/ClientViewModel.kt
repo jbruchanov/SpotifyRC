@@ -7,6 +7,8 @@ import androidx.lifecycle.*
 import com.scurab.android.spotifyrc.service.BluetoothServer
 import com.scurab.android.spotifyrc.spotify.ConnectingState
 import com.scurab.android.spotifyrc.spotify.SpotifyBtClient
+import com.scurab.android.spotifyrc.spotify.SpotifyLocalClient
+import com.spotify.protocol.types.ImageUri
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -72,7 +74,6 @@ class ClientViewModel @ViewModelInject constructor(
             isReconnecting = true
             while (true) {
                 Log.d("ClientViewModel", "ReconnectLoop:${spotify.connectedState}")
-                delay(BluetoothServer.TIMEOUT)
                 when (spotify.connectedState) {
                     ConnectingState.Disconnected -> spotify.connect()
                     ConnectingState.Connecting -> {
@@ -84,6 +85,7 @@ class ClientViewModel @ViewModelInject constructor(
                         return@launch
                     }
                 }
+                delay(BluetoothServer.TIMEOUT)
             }
         }
     }

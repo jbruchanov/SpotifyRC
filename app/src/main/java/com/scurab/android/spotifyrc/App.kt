@@ -31,4 +31,9 @@ class App : Application() {
             notificationManager.createNotificationChannels(notificationChannels)
         }
     }
+
+
+    companion object {
+        const val REDIRECT_URL = "spotifyrc://redirect"
+    }
 }

@@ -13,4 +13,5 @@ class AppPrefs @Inject constructor(@ApplicationContext context: Context) {
 
     var selectedDeviceName: String? by string(sharedPreferences, null)
     var selectedDeviceMac: String? by string(sharedPreferences, null)
+    var localAccessToken: String? by string(sharedPreferences, null)
 }

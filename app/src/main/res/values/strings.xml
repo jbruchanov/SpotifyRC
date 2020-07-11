@@ -17,4 +17,10 @@
     <string name="disconnected">Disconnected</string>
     <string name="connecting">Connecting</string>
     <string name="connected">Connected</string>
+    <string name="you_have_been_logged_in">You have been logged in</string>
+    <string name="unexpected_spotify_response">Unexpected spotify response</string>
+    <string name="ok">OK</string>
+    <string name="you_have_been_logged_out">You have been logged out</string>
+    <string name="install_spotify_app">Install the spotify app first!</string>
+    <string name="install">Install</string>
 </resources>

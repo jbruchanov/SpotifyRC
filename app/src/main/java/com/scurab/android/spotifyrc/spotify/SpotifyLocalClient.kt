@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.scurab.android.spotifyrc.App
 import com.scurab.android.spotifyrc.model.PlayerStateKt
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
@@ -35,13 +36,13 @@ class SpotifyLocalClient(
             SpotifyAppRemote.connect(
                 app,
                 ConnectionParams.Builder(clientId)
-                    .setRedirectUri("scurab://callback")
+                    .setRedirectUri(App.REDIRECT_URL)
                     .showAuthView(false)
                     .build(),
                 object : ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
                         Log.d(TAG, "Connected")
-                        _state.value = ConnectingState.Connecting
+                        _state.value = ConnectingState.Connected
                         spotify = spotifyAppRemote.also {
                             it.playerApi.subscribeToPlayerState().setEventCallback { state ->
                                 Log.d(TAG, "Update state:${state}")

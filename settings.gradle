@@ -1,2 +1,2 @@
+include ':spotify-api'
 include ':app'
-rootProject.name = "SpotifyRC"
