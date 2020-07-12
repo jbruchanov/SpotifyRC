@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_baseline_bluetooth_48" />
+        android:src="@drawable/ic_baseline_bluetooth_search_48" />
 
     <ImageButton
         android:id="@+id/spotify"

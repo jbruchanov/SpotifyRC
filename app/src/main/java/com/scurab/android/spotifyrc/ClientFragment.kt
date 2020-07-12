@@ -12,8 +12,11 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.scurab.android.spotifyrc.adapter.AlbumTracksAdapter
 import com.scurab.android.spotifyrc.databinding.FragmentClientBinding
+import com.scurab.android.spotifyrc.ext.addFragment
+import com.scurab.android.spotifyrc.ext.replaceFragment
 import com.scurab.android.spotifyrc.spotify.ConnectingState
 import com.scurab.android.spotifyrc.util.viewBinding
+import com.scurab.android.spotifyrc.viewmodel.ClientNavigationToken
 import com.scurab.android.spotifyrc.viewmodel.ClientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +26,7 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
     private val viewModel by viewModels<ClientViewModel>()
     private val views by viewBinding { FragmentClientBinding.bind(requireView()) }
     private val viewBoundToConnectivity by viewBinding {
-        listOf(views.trackNext, views.trackPlayPause, views.trackPrevious)
+        listOf(views.trackNext, views.trackPlayPause, views.trackPrevious, views.search)
     }
     private val adapter by viewBinding {
         AlbumTracksAdapter {
@@ -52,12 +55,21 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
         trackPlayPause.setOnClickListener { viewModel.playPause() }
         trackPrevious.setOnClickListener { viewModel.playPrevious() }
         trackNext.setOnClickListener { viewModel.playNext() }
+        search.setOnClickListener { viewModel.search() }
         album.isSelected = true
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun bindViewModel() {
+        viewModel.navigation.observe(viewLifecycleOwner) {
+            when(it) {
+                ClientNavigationToken.Search -> {
+                    addFragment(SearchFragment(), animations = Common.slideUpDownAnimations)
+                }
+            }
+        }
+
         viewModel.connectingState.observe(viewLifecycleOwner) { state ->
             viewBoundToConnectivity.forEach { v -> v.isEnabled = state == ConnectingState.Connected }
             views.track.text = ""

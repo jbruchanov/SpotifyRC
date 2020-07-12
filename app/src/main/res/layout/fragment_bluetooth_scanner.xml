@@ -32,10 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_thick"
-        android:background="@color/colorPrimary" />
+    <include layout="@layout/view_divider_thick" />
 
     <TextView
         android:layout_width="match_parent"

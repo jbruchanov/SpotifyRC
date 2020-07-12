@@ -4,5 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 class Search(
     @SerializedName("artists") val artists: Artists,
-    @SerializedName("tracks") val tracks: Tracks
+    @SerializedName("tracks") val tracks: Tracks,
+    @SerializedName("albums") val albums: Albums
 )

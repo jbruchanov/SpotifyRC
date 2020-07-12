@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 package com.scurab.android.spotify.api.model
 import com.google.gson.annotations.SerializedName
-data class Items (
+data class Item (
 
 	@SerializedName("artists") val artists : List<Artists>,
 	@SerializedName("available_markets") val available_markets : List<String>,

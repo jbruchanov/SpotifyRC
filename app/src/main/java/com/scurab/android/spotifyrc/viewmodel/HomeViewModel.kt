@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
+import com.scurab.android.spotify.api.model.Item
 import com.scurab.android.spotifyrc.AppPrefs
 import com.scurab.android.spotifyrc.lifecycle.LiveQueue
 import com.scurab.android.spotifyrc.lifecycle.MutableLiveQueue.Companion.navigationQueue
@@ -72,6 +73,10 @@ class HomeViewModel @ViewModelInject constructor(
             _navigation.emit(HomeNavigationToken.SpotifyError)
         }
         _uiState.value = HomeUiState(prefs.localAccessToken != null)
+    }
+
+    fun onItemClicked(it: Item) {
+
     }
 }
 

@@ -12,7 +12,7 @@ package com.scurab.android.spotify.api.model
 
 import com.google.gson.annotations.SerializedName
 
-data class Tracks(
+data class Albums(
 
     @SerializedName("href") val href: String,
     @SerializedName("items") val items: List<Item>,

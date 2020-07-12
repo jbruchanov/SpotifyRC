@@ -16,6 +16,7 @@
     <dimen name="button_elevation_pressed">2dp</dimen>
     <dimen name="button_elevation_default">4dp</dimen>
     <dimen name="button_home_min_size">100dp</dimen>
+    <dimen name="button_min_size">48dp</dimen>
     <dimen name="text_size_album">36sp</dimen>
     <dimen name="album_icon_radius">10dp</dimen>
     <dimen name="album_icon_size">275dp</dimen>

@@ -11,8 +11,8 @@ class CachingApi(private val spotifyApi: SpotifyApi) : SpotifyApi {
         return albums[id] ?: spotifyApi.getAlbum(id).also { albums[id] = it }
     }
 
-    override suspend fun search(query: String, type: String, market: String?): Search {
-        val key = "$query|$type|$market"
+    override suspend fun search(query: String, type: String, market: String?, offset: Int): Search {
+        val key = "$query|$type|$market|$offset"
         return searches[key] ?: spotifyApi.search(query, type, market).also { searches[key] = it }
     }
 }

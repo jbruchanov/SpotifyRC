@@ -19,8 +19,10 @@ import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.concurrent.thread
 
+@Singleton
 class SpotifyBtClient @Inject constructor(
     private val adapter: BluetoothAdapter,
     private val appPrefs: AppPrefs,

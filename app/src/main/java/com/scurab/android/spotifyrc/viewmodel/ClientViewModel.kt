@@ -1,15 +1,16 @@
 package com.scurab.android.spotifyrc.viewmodel
 
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
+import com.scurab.android.spotifyrc.lifecycle.MutableLiveQueue.Companion.navigationQueue
 import com.scurab.android.spotifyrc.model.STrack
 import com.scurab.android.spotifyrc.service.BluetoothServer
 import com.scurab.android.spotifyrc.spotify.ConnectingState
 import com.scurab.android.spotifyrc.spotify.SpotifyBtClient
-import com.scurab.android.spotifyrc.spotify.SpotifyLocalClient
-import com.spotify.protocol.types.ImageUri
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,9 +23,10 @@ class ClientViewModel @ViewModelInject constructor(
     val connectingState = spotify.state.map {
         it.takeIf { !(it == ConnectingState.Disconnected && isReconnecting) } ?: ConnectingState.Connecting
     }.distinctUntilChanged()
-    val playerState = spotify.playerState
 
+    val playerState = spotify.playerState
     val image = spotify.image
+    val navigation = navigationQueue<ClientNavigationToken>()
 
     fun playPause() {
         viewModelScope.launch {
@@ -82,4 +84,12 @@ class ClientViewModel @ViewModelInject constructor(
             spotify.play(track.uri)
         }
     }
+
+    fun search() {
+        navigation.emit(ClientNavigationToken.Search)
+    }
+}
+
+enum class ClientNavigationToken {
+    Search
 }
