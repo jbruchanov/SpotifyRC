@@ -8,9 +8,9 @@ class STrack(override val data: MutableMap<String, Any?> = mutableMapOf()) : IHa
     var uri: String by data
     var name: String by data
 
-    constructor(id: String, number: Int, uri: String, name: String) : this() {
+    constructor(id: String, trackNumber: Int, uri: String, name: String) : this() {
         this.id = id
-        this.number = number
+        this.number = trackNumber
         this.uri = uri
         this.name = name
     }
@@ -18,5 +18,7 @@ class STrack(override val data: MutableMap<String, Any?> = mutableMapOf()) : IHa
 
 
 fun Album.getSimpleTracks(): List<STrack> {
-    return tracks?.items?.map { STrack(it.id, it.track_number, it.uri, it.name) } ?: emptyList()
+    return tracks?.items
+        ?.map { STrack(it.id, it.track_number, it.uri, it.name) }
+        ?.sortedBy { it.number }
 }

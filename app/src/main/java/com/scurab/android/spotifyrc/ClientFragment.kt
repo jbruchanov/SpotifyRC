@@ -15,7 +15,6 @@ import com.scurab.android.spotifyrc.databinding.FragmentClientBinding
 import com.scurab.android.spotifyrc.spotify.ConnectingState
 import com.scurab.android.spotifyrc.util.viewBinding
 import com.scurab.android.spotifyrc.viewmodel.ClientViewModel
-import com.spotify.protocol.types.Track
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -113,6 +112,7 @@ class ClientFragment : Fragment(R.layout.fragment_client) {
                 }
                 lastImageUri = state.trackImageUri
                 adapter.items = state.albumTracks ?: emptyList()
+                adapter.playginUri = state.trackUri
             }
         }
     }

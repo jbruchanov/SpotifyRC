@@ -8,6 +8,11 @@ import com.scurab.android.spotifyrc.databinding.ViewTrackItemBinding
 import com.scurab.android.spotifyrc.model.STrack
 
 class AlbumTracksAdapter(private val clickListener: (STrack) -> Unit) : RecyclerView.Adapter<AlbumTrackViewHolder>() {
+    var playginUri: String? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
     var items: List<STrack> = emptyList()
         set(value) {
             field = value
@@ -30,6 +35,7 @@ class AlbumTracksAdapter(private val clickListener: (STrack) -> Unit) : Recycler
     override fun onBindViewHolder(holder: AlbumTrackViewHolder, position: Int) {
         val item = items[position]
         holder.views.name.text = item.name
+        holder.views.root.isSelected = item.uri == playginUri
     }
 }
 
